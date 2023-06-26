@@ -59,7 +59,6 @@ public class FileSearchAppUI {
             }
         });
     }
-
     public void show() {
         frame.setVisible(true);
     }
