@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FileSearchAppUI {
+public class FileSearchUI {
     private JFrame frame;
     private JTextField folderTextField;
     private JTextField keywordTextField;
     private JTextArea resultTextArea;
 
-    public FileSearchAppUI() {
+    public FileSearchUI() {
         initialize();
     }
 
@@ -59,12 +59,13 @@ public class FileSearchAppUI {
             }
         });
     }
+
     public void show() {
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        FileSearchAppUI appUI = new FileSearchAppUI();
+        FileSearchUI appUI = new FileSearchUI();
         appUI.show();
     }
 }
