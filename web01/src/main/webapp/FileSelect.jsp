@@ -1,61 +1,42 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Document Retrieval</title>
-	<script type="text/javascript">
-	function selectFolder() {
-	    var fileChooser = document.getElementById("fileChooser");
-	    fileChooser.click();
-	}
-
-	function loadFolders() {
-   		var selectedDir = document.getElementById("fileChooser").files[0];
-    	var xmlhttp = new XMLHttpRequest();
-    	xmlhttp.onreadystatechange = function() {
-        	if (this.readyState === 4 && this.status === 200) {
-            	document.getElementById("folderList").innerHTML = this.responseText;
-        	}
-    	};
-    	xmlhttp.open("POST", "DiskExplorerServlet?selectedDir=" + selectedDir, true);
-    	xmlhttp.send();
-	}
-
-	function exploreFolder(folderPath) {
-	    var xmlhttp = new XMLHttpRequest();
-   	 	xmlhttp.onreadystatechange = function() {
-  	      	if (this.readyState === 4 && this.status === 200) {
-  	          	document.getElementById("folderList").innerHTML = this.responseText;
-  	      	}
- 	   	};
-	    xmlhttp.open("GET", "DiskExplorerServlet?folderPath=" + folderPath, true);
-	    xmlhttp.send();
-	}
-
-	function exploreFiles(filePath) {
-    	var xmlhttp = new XMLHttpRequest();
-    	xmlhttp.onreadystatechange = function() {
- 	       if (this.readyState === 4 && this.status === 200) {
-	            document.getElementById("result").innerHTML = this.responseText;
-	        }
-	    };
-	    xmlhttp.open("GET", "DiskExplorerServlet?filePath=" + filePath, true);
- 	   xmlhttp.send();
-	}
-	</script>
+<meta charset="UTF-8">
+<title>Choose File</title>
 </head>
 <body>
-	<h1>Document Retrieval</h1>
-    <input type="file" id="fileChooser" style="display:none;" onchange="loadFolders()">
-	<button onclick="selectFolder()">Choose File</button>
-	<br><br>
-	<div id="folderList"></div>
-    <br>
-    <button onclick="window.history.back()">return last</button>
-    <button onclick="window.location.href='DiskExplorerServlet?action=confirm'">confirm</button>
-    <br><br>
-    <div id="result"></div>
+    <h1>选择文件夹</h1>
+    <%
+    String[] disks = (String[]) request.getAttribute("disks");
+    if (disks != null) {
+        for (String disk : disks) {
+            %>
+            <button onclick="exploreFolder('<%= disk %>')">
+                <%= disk %>
+            </button><br>
+            <%
+        }
+    }
+    %>
+
+    <form id="uploadForm" action="IndexingServlet" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" multiple>
+        <input type="submit" value="确认" name="index">
+    </form>
+
+    <script>
+    function exploreFolder(folderPath) {
+        // 将选定的文件夹路径传递给后端
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = 'DiskExplorerServlet';
+        form.innerHTML = '<input type="hidden" name="selectedDir" value="' + folderPath + '">';
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+    </script>
 </body>
 </html>
