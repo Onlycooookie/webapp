@@ -9,4 +9,12 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+        <servlet-name>SaveResultsServlet</servlet-name>
+        <servlet-class>SaveResultsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+        <servlet-name>SaveResultsServlet</servlet-name>
+        <url-pattern>SaveResultsServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
