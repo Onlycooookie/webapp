@@ -63,7 +63,6 @@ public class FileSearchUI {
     public void show() {
         frame.setVisible(true);
     }
-
     public static void main(String[] args) {
         FileSearchUI appUI = new FileSearchUI();
         appUI.show();
