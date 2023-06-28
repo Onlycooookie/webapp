@@ -1,70 +1,104 @@
 package main;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FileSearchUI {
-    private JFrame frame;
-    private JTextField folderTextField;
-    private JTextField keywordTextField;
-    private JTextArea resultTextArea;
-
-    public FileSearchUI() {
-        initialize();
+public class FileSearch {
+    public String searchFiles(String folderPath, String keyword) {
+        List<File> indexedFiles = indexFiles(folderPath);
+        List<SearchResult> searchResults = searchFiles(indexedFiles, keyword);
+        return formatResults(searchResults);
     }
 
-    private void initialize() {
-        frame = new JFrame();
-        frame.setBounds(100, 100, 500, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setLayout(null);
+    private List<File> indexFiles(String searchPath) {
+        List<File> indexedFiles = new ArrayList<>();
 
-        JLabel lblFolderPath = new JLabel("目录路径:");
-        lblFolderPath.setBounds(10, 20, 80, 14);
-        frame.getContentPane().add(lblFolderPath);
+        File folder = new File(searchPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            return indexedFiles;
+        }
 
-        JLabel lblKeyword = new JLabel("关键字:");
-        lblKeyword.setBounds(10, 50, 80, 14);
-        frame.getContentPane().add(lblKeyword);
-
-        folderTextField = new JTextField();
-        folderTextField.setBounds(100, 20, 250, 20);
-        frame.getContentPane().add(folderTextField);
-        folderTextField.setColumns(10);
-
-        keywordTextField = new JTextField();
-        keywordTextField.setBounds(100, 50, 250, 20);
-        frame.getContentPane().add(keywordTextField);
-        keywordTextField.setColumns(10);
-
-        JButton btnSearch = new JButton("搜索");
-        btnSearch.setBounds(360, 20, 80, 50);
-        frame.getContentPane().add(btnSearch);
-
-        resultTextArea = new JTextArea();
-        resultTextArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(resultTextArea);
-        scrollPane.setBounds(10, 80, 460, 170);
-        frame.getContentPane().add(scrollPane);
-
-        btnSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String folderPath = folderTextField.getText();
-                String keyword = keywordTextField.getText();
-
-                FileSearch searchApp = new FileSearch();
-                String results = searchApp.searchFiles(folderPath, keyword);
-                resultTextArea.setText(results);
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && (file.getName().endsWith(".pdf") || file.getName().endsWith(".doc")
+                        || file.getName().endsWith(".docx"))) {
+                    indexedFiles.add(file);
+                } else if (file.isDirectory()) {
+                    indexedFiles.addAll(indexFiles(file.getAbsolutePath()));
+                }
             }
-        });
+        }
+
+        return indexedFiles;
     }
 
-    public void show() {
-        frame.setVisible(true);
+    private List<SearchResult> searchFiles(List<File> indexedFiles, String keyword) {
+        List<SearchResult> results = new ArrayList<>();
+
+        for (File file : indexedFiles) {
+            List<String> matchedLines = new ArrayList<>();
+            int lineNumber = 0;
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lineNumber++;
+                    if (line.contains(keyword)) {
+                        matchedLines.add(lineNumber + "\t" + line);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (!matchedLines.isEmpty()) {
+                SearchResult result = new SearchResult(file.getAbsolutePath(), matchedLines);
+                results.add(result);
+            }
+        }
+
+        return results;
     }
-    public static void main(String[] args) {
-        FileSearchUI appUI = new FileSearchUI();
-        appUI.show();
+
+    private String formatResults(List<SearchResult> results) {
+        StringBuilder sb = new StringBuilder();
+
+        if (results.isEmpty()) {
+            sb.append("未找到匹配的文件。");
+        } else {
+            for (SearchResult result : results) {
+                sb.append("路径：").append(result.getFilePath()).append("\n");
+
+                for (String line : result.getMatchedLines()) {
+                    sb.append("-----------------------------------\n");
+                    sb.append(line).append("\n");
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private static class SearchResult {
+        private final String filePath;
+        private final List<String> matchedLines;
+
+        public SearchResult(String filePath, List<String> matchedLines) {
+            this.filePath = filePath;
+            this.matchedLines = matchedLines;
+        }
+
+        public String getFilePath() {
+            return filePath;
+        }
+
+        public List<String> getMatchedLines() {
+            return matchedLines;
+        }
     }
 }
