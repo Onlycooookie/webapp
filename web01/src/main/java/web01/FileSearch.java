@@ -1,9 +1,6 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,9 +75,19 @@ public class FileSearch {
                     sb.append(line).append("\n");
                 }
             }
+
+            try {
+                String filePath = "搜索结果.txt";
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                writer.write(sb.toString());
+                writer.close();
+                return filePath;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return sb.toString();
+        return "";
     }
 
     private static class SearchResult {
