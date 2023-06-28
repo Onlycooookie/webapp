@@ -3,6 +3,9 @@ package main;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class FileSearchUI {
     private JFrame frame;
@@ -53,9 +56,38 @@ public class FileSearchUI {
                 String folderPath = folderTextField.getText();
                 String keyword = keywordTextField.getText();
 
-                FileSearchApp searchApp = new FileSearchApp();
+                FileSearch searchApp = new FileSearch();
                 String results = searchApp.searchFiles(folderPath, keyword);
                 resultTextArea.setText(results);
+            }
+        });
+        JButton btnSave = new JButton("保存结果");
+        btnSave.setBounds(360, 230, 100, 25);
+        frame.getContentPane().add(btnSave);
+
+        btnSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("保存搜索结果");
+                int userSelection = fileChooser.showSaveDialog(frame);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                    FileSearch searchApp = new FileSearch();
+                    String keyword = null;
+                    String folderPath = null;
+                    String results = searchApp.searchFiles(folderPath, keyword);
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                        writer.write(results);
+                        writer.close();
+                        JOptionPane.showMessageDialog(frame, "搜索结果已保存。", "保存成功",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame, "保存搜索结果时出现错误。", "保存失败",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
     }
