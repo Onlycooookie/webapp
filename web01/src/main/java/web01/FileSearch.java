@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileSearch {
-    public String searchFiles(String folderPath, String keyword) {
-        List<File> indexedFiles = indexFiles(folderPath);
+    public String searchFiles(String searchPath, String keyword) {
+        List<File> indexedFiles = indexFiles(searchPath);
         List<SearchResult> searchResults = searchFiles(indexedFiles, keyword);
         return formatResults(searchResults);
     }
@@ -36,7 +36,6 @@ public class FileSearch {
 
         return indexedFiles;
     }
-
     private List<SearchResult> searchFiles(List<File> indexedFiles, String keyword) {
         List<SearchResult> results = new ArrayList<>();
 
