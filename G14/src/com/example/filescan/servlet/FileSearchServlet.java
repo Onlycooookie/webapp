@@ -37,7 +37,6 @@ public class FileSearchServlet extends HttpServlet {
                 SearchResult searchResult = new SearchResult();
                 List<String> paragraph = customFile.getParagraph();
                 // 遍历段落中的每一行
-                int flag=1;
                 for (int i = 0; i < paragraph.size(); i++) {
                     String s = paragraph.get(i);
                     if (s.contains(keyword)){
@@ -46,10 +45,9 @@ public class FileSearchServlet extends HttpServlet {
                         searchResultItem.setContent(s);
                         searchResultItem.setLineNum(i);
                         searchResult.getList().add(searchResultItem);
-                        flag=0;
                     }
                 }
-                if (flag==0){
+                if (searchResult.getList().size() > 0){
                     searchResult.setPath(customFile.getPath());
                     resultList.add(searchResult);
                 }
