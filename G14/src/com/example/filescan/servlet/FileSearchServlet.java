@@ -34,21 +34,22 @@ public class FileSearchServlet extends HttpServlet {
             // 遍历文件索引
             for (CustomFile customFile : list) {
                 // 在文件的段落中搜索关键词
-                int index = customFile.getParagraph().indexOf(keyword);
-                if (index != -1){
-                    SearchResult searchResult = new SearchResult();
-                    List<String> paragraph = customFile.getParagraph();
-                    // 遍历段落中的每一行
-                    for (int i = 0; i < paragraph.size(); i++) {
-                        String s = paragraph.get(i);
-                        if (s.contains(keyword)){
-                            // 创建搜索结果项并添加到搜索结果中
-                            SearchResultItem searchResultItem = new SearchResultItem();
-                            searchResultItem.setContent(s);
-                            searchResultItem.setLineNum(i);
-                            searchResult.getList().add(searchResultItem);
-                        }
+                SearchResult searchResult = new SearchResult();
+                List<String> paragraph = customFile.getParagraph();
+                // 遍历段落中的每一行
+                int flag=1;
+                for (int i = 0; i < paragraph.size(); i++) {
+                    String s = paragraph.get(i);
+                    if (s.contains(keyword)){
+                        // 创建搜索结果项并添加到搜索结果中
+                        SearchResultItem searchResultItem = new SearchResultItem();
+                        searchResultItem.setContent(s);
+                        searchResultItem.setLineNum(i);
+                        searchResult.getList().add(searchResultItem);
+                        flag=0;
                     }
+                }
+                if (flag==0){
                     searchResult.setPath(customFile.getPath());
                     resultList.add(searchResult);
                 }
