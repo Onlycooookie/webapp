@@ -91,6 +91,12 @@
 
 <script type="text/javascript">
 
+    let keyword = document.querySelector('#keywordInput').value
+
+    document.querySelectorAll('.content-item .content').forEach(item =>{
+        item.innerHTML = item.innerText.replaceAll(new RegExp(keyword, 'g'), `<span style="color: red">\${keyword}</span>`)
+    })
+
     function saveResult() {
         let contentArr = []
         $('.checkbox:checked').each((index, item) =>{
@@ -123,9 +129,6 @@
         URL.revokeObjectURL(url);
     }
 
-
 </script>
-
 </body>
-
 </html>
